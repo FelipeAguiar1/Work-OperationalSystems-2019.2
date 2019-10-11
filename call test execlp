@@ -1,0 +1,43 @@
+Exemplo:
+
+                /* arquivo test_exec.c */
+
+#include <stdio.h>
+#include <unistd.h>
+
+int main()
+{
+      execl("/bin/ls","ls","test_exec.c",NULL) ;
+      printf ("Eu ainda nao estou morto\n") ;
+      exit(0);
+}
+Resultado da execução:
+
+euler:~/> test_exec
+test_exec.c
+O comando ls é executado, mas o printf não. Isto mostra que o processo não retorna após a execução do execl.
+
+O exemplo seguinte mostra a utilidade do fork neste caso.
+Exemplo:
+
+                 /* arquivo test_exec_fork.c */
+
+#include <stdio.h>
+#include <unistd.h>
+
+int main()
+{
+     if ( fork()==0 ) execl( "/bin/ls","ls","test_exec.c",NULL) ;
+     else {
+          sleep(2) ;  /* espera o fim de ls para executar o printf() */
+          printf ("Eu sou o pai e finalmente posso continuar\n") ;
+     }
+     exit(0);
+}
+Resultado da execução:
+
+euler:~/> test_exec_fork
+test_exec.c
+Eu sou o pai e finalmente posso continuar
+Neste caso, o filho morre após a execução do ls, e o pai continuará a viver, executando então o printf.
+
